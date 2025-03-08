@@ -14,6 +14,41 @@ router.get("/all", (req, res) => {
     });
 });
 
+router.get("/last-five", (req, res) => {
+    db.query(
+        "SELECT id, name, DATE_FORMAT(date, '%Y-%m-%d') AS date, type, amount FROM expenses ORDER BY id DESC LIMIT 5",
+        (err, results) => {
+            if (err) {
+                console.error("Error fetching last 5 expenses:", err);
+                return res.status(500).json({ error: "Internal Server Error" });
+            }
+            res.json(results);
+        }
+    );
+});
+
+router.get("/monthly-expenses", (req, res) => {
+    const query = `
+        SELECT 
+            DATE_FORMAT(date, '%Y-%m') AS expense_month, 
+            SUM(amount) AS total_amount
+        FROM expenses
+        GROUP BY expense_month
+        ORDER BY expense_month DESC
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error fetching monthly expenses:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        res.json(results);
+    });
+});
+
+
+
+
 // Add new expense
 router.post("/add", (req, res) => {
     const { name, date, type, amount } = req.body;
