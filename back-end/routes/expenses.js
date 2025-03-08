@@ -46,9 +46,6 @@ router.get("/monthly-expenses", (req, res) => {
     });
 });
 
-
-
-
 // Add new expense
 router.post("/add", (req, res) => {
     const { name, date, type, amount } = req.body;
